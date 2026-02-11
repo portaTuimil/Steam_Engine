@@ -1,4 +1,3 @@
-
 :root{
     --ghost-white: #F2F2F2;
     --subtle-grey: #E0E0E0;
@@ -65,4 +64,5 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--background-color);   
 }
