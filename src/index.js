@@ -19,6 +19,7 @@ function draw(angle){
     drawBase();
     drawPistonValve(angle);
     drawTopBlock();
+    drawExhaust();
 }
 
 
@@ -250,8 +251,26 @@ function drawTopBlock(){
     ctx.lineTo(left_wall_combustion_x  + bezier_pipe_x2_term - top_chamber_w/2, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10);
     ctx.lineTo(left_wall_combustion_x  + bezier_pipe_x2_term - top_chamber_w/2 + 20, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
     ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - 20, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
-        ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10);
     ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h/2 - 8);
+    ctx.stroke();
+}
+
+
+const exhaust_x = 80;
+const exhaust_w = 25;
+const exhaust_h = 100; 
+function drawExhaust(){
+    ctx.beginPath(); //right
+    ctx.moveTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - exhaust_h);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x + 100, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - exhaust_h - 100);
+    ctx.stroke();
+
+    ctx.beginPath(); //left
+    ctx.moveTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x - exhaust_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x - exhaust_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - exhaust_h - exhaust_w/2);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - exhaust_x - exhaust_w + 112 , piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - exhaust_h - exhaust_w/2 - 112);
     ctx.stroke();
 }
 
@@ -271,7 +290,7 @@ function animate(time){
     draw(angle);
     ctx.restore();
 
-    angle += (180 * Math.PI / 180)* deltaTime;
+    angle += (300 * Math.PI / 180)* deltaTime;
     ctx.fillStyle = "white";
     ctx.strokeStyle = "white";
     ctx.lineWidth = linewWidth;
