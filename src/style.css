@@ -57,12 +57,12 @@ a:active, button:active {
 
 /* ---------- Page ---------- */
 canvas{
-    background-color: var(--background-color);   
+    background-color: var(--background-color);  
 }
 
 body{
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: var(--background-color);   
+    justify-content: center; 
+    background-color: var(--background-color);  
 }

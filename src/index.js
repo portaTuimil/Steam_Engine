@@ -4,9 +4,11 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth/ 1.2;
 canvas.height = (window.innerWidth/ 1.2)*9/16;
 
+const linewWidth = 10;
+
 ctx.fillStyle = "white";
 ctx.strokeStyle = "white";
-ctx.lineWidth = 5;
+ctx.lineWidth = linewWidth;
 
 let angle = 0;
 
@@ -15,40 +17,62 @@ function draw(angle){
     drawPiston(angle);
     drawCombustionChamber();
     drawBase();
+    drawPistonValve(angle);
+    drawTopBlock();
 }
 
 
-let wheel_x = 1070;
-let wheel_y = 540;
-let wheel_ext_r = 200;
-let wheel_piston_r = 140;
-let spoke_n = 7;
-let spoke_a = (360 / spoke_n)*Math.PI/180;
-let spoke_w = 8;
+const wheel_x = 1070;
+const wheel_y = 600;
+const wheel_ext_r = 240;
+const wheel_piston_r = 100;
+const spoke_n = 7;
+const spoke_a = (360 / spoke_n)*Math.PI/180;
+const spoke_w = 8;    
+const spoke_curve = 0.15 * wheel_ext_r;
 
 function drawWheel(angle){
     ctx.beginPath();
+    ctx.lineWidth = 22;
     ctx.arc(wheel_x, wheel_y, wheel_ext_r, 0, 2 * Math.PI);
     ctx.stroke();
-    for (let i = 0; i<10; i++){
+
+    ctx.beginPath();
+    ctx.lineWidth = 6;
+    ctx.arc(wheel_x, wheel_y, wheel_piston_r, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    for (let i = 0; i < 10; i++) {
+        const a = angle + i * spoke_a;
+        const endX = wheel_x + wheel_ext_r * Math.cos(a);
+        const endY = wheel_y + wheel_ext_r * Math.sin(a);
+        // midpoint of spoke
+        const midX = wheel_x + 0.5 * wheel_ext_r * Math.cos(a);
+        const midY = wheel_y + 0.5 * wheel_ext_r * Math.sin(a);
+        // perpendicular direction
+        const perpX = -Math.sin(a);
+        const perpY =  Math.cos(a);
+        // control point
+        const ctrlX = midX + perpX * spoke_curve;
+        const ctrlY = midY + perpY * spoke_curve;
         ctx.beginPath();
         ctx.lineWidth = spoke_w;
         ctx.lineCap = "butt";
         ctx.moveTo(wheel_x, wheel_y);
-        ctx.lineTo(wheel_ext_r * Math.cos(angle + i*spoke_a) + wheel_x, wheel_ext_r * Math.sin(angle + i*spoke_a) + wheel_y);
+        ctx.quadraticCurveTo(ctrlX, ctrlY, endX, endY);
         ctx.stroke();
-        ctx.lineWidth = 5;
     }
+    ctx.lineWidth = linewWidth;
 }
 
 
-let piston_h = 100;
-let piston_w = 20;
+const piston_h = 120;
+const piston_w = 20;
 let piston_x;   //the value at the middle of the piston
-let piston_y = 500; //height of the piston axis
-let connectingRod_w = 350; //goes into the middle of the piston
-let connectingRod_h = 10;
-let rodLength = 350;
+const piston_y = 560; //height of the piston axis
+const connectingRod_w = 350; //goes into the middle of the piston
+const connectingRod_h = 10;
+const rodLength = 350;
 
 function drawPiston(angle){
     //coords calculation:
@@ -75,13 +99,13 @@ function drawPiston(angle){
 }
 
 
-let combustionChamber_w = 50;
-let combustionPipe_r = 50;
-let bezier_pipe_x1_term = 50;
-let bezier_pipe_x2_term = 60;
-let bezier_pipe_y1_term = 20;
-let bezier_pipe_y2_term = 40;
-let bezier_pipe_y3_term = 60;
+const combustionChamber_w = 50;
+const combustionPipe_r = combustionChamber_w - piston_w/2 + 5;
+const bezier_pipe_x1_term = 60;
+const bezier_pipe_x2_term = 80;
+const bezier_pipe_y1_term = 20;
+const bezier_pipe_y2_term = 40;
+const bezier_pipe_y3_term = 60;
 
 //for excentric rods
 let delta_Y = Math.abs(wheel_y - piston_y);
@@ -106,8 +130,6 @@ function drawCombustionChamber(){
     ctx.moveTo(left_wall_combustion_x + combustionPipe_r, piston_y - piston_h/2);
     ctx.lineTo(rigth_wall_combustion_x - combustionPipe_r, piston_y - piston_h/2 );
     ctx.bezierCurveTo(rigth_wall_combustion_x - combustionPipe_r, piston_y - piston_h/2 - bezier_pipe_y1_term, rigth_wall_combustion_x - combustionPipe_r - bezier_pipe_x1_term, piston_y - piston_h/2 - bezier_pipe_y2_term , rigth_wall_combustion_x - combustionPipe_r - bezier_pipe_x2_term, piston_y - piston_h/2- bezier_pipe_y3_term);
-    ctx.stroke();
-    ctx.beginPath();
     ctx.moveTo(left_wall_combustion_x + combustionPipe_r, piston_y - piston_h/2);
     ctx.bezierCurveTo(left_wall_combustion_x + combustionPipe_r, piston_y - piston_h/2 - bezier_pipe_y1_term, left_wall_combustion_x + combustionPipe_r + bezier_pipe_x1_term, piston_y - piston_h/2 - bezier_pipe_y2_term , left_wall_combustion_x + combustionPipe_r + bezier_pipe_x2_term, piston_y - piston_h/2 - bezier_pipe_y3_term);
     ctx.stroke();
@@ -123,22 +145,22 @@ function drawCombustionChamber(){
 }
 
 
-let base_margin_r = 40;
-let base_h = 250;
-let base_right_width = 30;
+const base_margin_r = 40;
+const base_h = 250;
+const  base_right_width = 110;
 let base_r = wheel_piston_r + base_margin_r;
 //line from base_rod to 
-const base_rod_x = rigth_wall_combustion_x;
-const base_rod_y = piston_y + piston_h / 2;
-const base_rod_length = Math.hypot(base_rod_x - wheel_x,base_rod_y - wheel_y);
-const tangent_angle = Math.atan2(base_rod_y - wheel_y, base_rod_x - wheel_x) - Math.acos(base_r / base_rod_length); // the low tangent angle
+let base_rod_x = rigth_wall_combustion_x;
+let base_rod_y = piston_y + piston_h / 2;
+let base_rod_length = Math.hypot(base_rod_x - wheel_x,base_rod_y - wheel_y);
+let tangent_angle = Math.atan2(base_rod_y - wheel_y, base_rod_x - wheel_x) - Math.acos(base_r / base_rod_length); // the low tangent angle
 //tangent points
-const tx = wheel_x + base_r * Math.cos(tangent_angle);
-const ty = wheel_y + base_r * Math.sin(tangent_angle);
+let tx = wheel_x + base_r * Math.cos(tangent_angle);
+let ty = wheel_y + base_r * Math.sin(tangent_angle);
 //tangent direction (perpendicular to radius)
-const t = (base_rod_x - tx) / -Math.sin(tangent_angle);
-const base_rod_x_end = base_rod_x;
-const base_rod_y_end = ty + t * Math.cos(tangent_angle);
+let t = (base_rod_x - tx) / -Math.sin(tangent_angle);
+let base_rod_x_end = base_rod_x;
+let base_rod_y_end = ty + t * Math.cos(tangent_angle)
 
 function drawBase() {
     ctx.beginPath();
@@ -151,32 +173,119 @@ function drawBase() {
     ctx.lineTo(wheel_x + base_r + base_right_width, piston_y + piston_h/2 + base_h);
     ctx.lineTo(wheel_x + base_r + base_right_width, wheel_y);
     ctx.lineTo(wheel_x + base_r, wheel_y);
+    ctx.stroke();
     ctx.fill();
+}
+
+
+let valve_h = 50;
+let valve_w = 2.5 * combustionPipe_r;
+let valve_r = 5;
+let valve_y = piston_y - piston_h/2- bezier_pipe_y3_term  - valve_h/2;
+let middle_point = (rigth_wall_combustion_x + left_wall_combustion_x)/2;
+let movement_ratio = (rigth_wall_combustion_x - combustionPipe_r - bezier_pipe_x2_term - middle_point)/(-middle_point + rigth_wall_combustion_x -combustionChamber_w - piston_w/2 + 5);
+
+let valve_phase = Math.PI / 2; 
+let valve_throw = combustionPipe_r * 0.5;
+const eccentric_r = 22;            
+const eccentric_phase = Math.PI/2;
+let rodValveLength = 376;   //fine tuned
+function drawPistonValve(){
+    function getEccentricPos(angle) {
+        return {
+            x: wheel_x + eccentric_r * Math.cos(angle + eccentric_phase),
+            y: wheel_y + eccentric_r * Math.sin(angle + eccentric_phase)
+        };
+    }
+    const valveRodLength = 380;
+
+    function getValveX(angle) {
+        const ecc = getEccentricPos(angle);
+        const dy = ecc.y - valve_y;
+        const inside = valveRodLength**2 - dy**2;
+        if (inside <= 0) return middle_point;
+        const dx = Math.sqrt(inside);
+        return ecc.x - dx;
+    }
+    const ecc = getEccentricPos(angle);
+    const valve_x = getValveX(angle);
+
+    //wheel rod
     ctx.beginPath();
-    ctx.arc(wheel_x, wheel_y,base_r,0,tangent_angle,false);
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(base_rod_x_end, base_rod_y_end);
-    ctx.lineTo(rigth_wall_combustion_x, piston_y + piston_h/2);
-    ctx.lineTo(left_wall_combustion_x, piston_y + piston_h/2);
-    ctx.lineTo(left_wall_combustion_x, piston_y + piston_h/2 + base_h);
-    ctx.lineTo(wheel_x + base_r + base_right_width, piston_y + piston_h/2 + base_h);
-    ctx.lineTo(wheel_x + base_r + base_right_width, wheel_y);
-    ctx.lineTo(wheel_x + base_r, wheel_y);
+    ctx.lineCap = "round";
+    ctx.lineWidth = 6;
+    ctx.moveTo(ecc.x, ecc.y);
+    ctx.lineTo(valve_x, valve_y);
+    ctx.stroke();
+
+    //valve with fixed rod
+    ctx.beginPath();
+    ctx.roundRect(valve_x - valve_w/2 -rodValveLength, valve_y - valve_h/2, valve_w, valve_h, valve_r);
+    ctx.fill()
+    ctx.beginPath();
+    ctx.lineWidth = 6;
+    ctx.moveTo(valve_x, valve_y);
+    ctx.lineTo(valve_x +  valve_w/2 - rodValveLength, valve_y);
+    ctx.stroke();
+    ctx.clearRect(valve_x - valve_w/2 + 20 -rodValveLength , valve_y - valve_h/2 + 20, valve_w - 40 , valve_h - 20) 
+    //wheel circle
+    ctx.beginPath();
+    ctx.lineWidth = 10;
+    ctx.arc(wheel_x, wheel_y, eccentric_r, 0, 2 * Math.PI);
+    ctx.stroke();
+}
+
+
+let top_chamber_w = 100;
+function drawTopBlock(){
+    ctx.beginPath(); //right
+    ctx.moveTo(rigth_wall_combustion_x - bezier_pipe_x2_term, piston_y - piston_h/2 - bezier_pipe_y3_term);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h/2 + 8);
+    ctx.stroke();
+
+    ctx.beginPath(); //left
+    ctx.moveTo(left_wall_combustion_x  + bezier_pipe_x2_term, piston_y - piston_h/2 - bezier_pipe_y3_term);
+    ctx.lineTo(left_wall_combustion_x  + bezier_pipe_x2_term - top_chamber_w/2, piston_y - piston_h/2 - bezier_pipe_y3_term);
+    ctx.lineTo(left_wall_combustion_x  + bezier_pipe_x2_term - top_chamber_w/2, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10);
+    ctx.lineTo(left_wall_combustion_x  + bezier_pipe_x2_term - top_chamber_w/2 + 20, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w - 20, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10 - 20);
+        ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h - 10);
+    ctx.lineTo(rigth_wall_combustion_x - bezier_pipe_x2_term + top_chamber_w, piston_y - piston_h/2 - bezier_pipe_y3_term - valve_h/2 - 8);
     ctx.stroke();
 }
 
 
 let lastTime = 0;
 function animate(time){
-    const deltaTime = (time - lastTime) / 1000; // seconds
+    const deltaTime = (time - lastTime) / 1000;
     lastTime = time;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //actualizar el estado
-    angle += (180 * Math.PI / 180)* deltaTime;
+
+    const scale = canvas.width / 1422; // original design width
+
+    ctx.save();
+    ctx.scale(scale, scale);
+    ctx.translate(-40, 0);
     draw(angle);
-    window.requestAnimationFrame(animate);
+    ctx.restore();
+
+    angle += (180 * Math.PI / 180)* deltaTime;
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = linewWidth;
+    requestAnimationFrame(animate);
 }
 
-//draw(angle);
 requestAnimationFrame(animate);
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth / 1.2;
+    canvas.height = canvas.width * 9 / 16;  // keep aspect ratio
+}
+
+window.addEventListener('resize', () => {
+    resizeCanvas();
+});
+resizeCanvas();
