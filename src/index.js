@@ -19,8 +19,6 @@ window.addEventListener("resize", () => {
     canvas.steamEngineInstance.resize(width, height);
 });
 
-
-
 class SteamEngine {
     constructor(canvas, lineColor, fillColor, lineWidth) {
         this.canvas = canvas;
@@ -49,6 +47,8 @@ class SteamEngine {
         this.drawChamber();
         this.drawBase();
         this.drawPistonValve();
+        this.drawTopChamber();
+        this.drawExhaust();
     }
 
     animate(time) {
@@ -221,7 +221,32 @@ class SteamEngine {
         this.ctx.fillRect(this.model.valveX + this.model.valveWidth/2, this.model.valveY - this.model.valveRodHeight/2, this.model.valveRodWidth, this.model.valveRodHeight);
         this.ctx.fillRect(this.model.valveX + this.model.valveWidth/2 - this.model.valveWidth/this.model.valveOpeningFactor, this.model.valveY - this.model.valveHeight/2, this.model.valveWidth/this.model.valveOpeningFactor, this.model.valveHeight);
         this.ctx.fillRect(this.model.valveX - this.model.valveWidth/2, this.model.valveY - this.model.valveHeight/2, this.model.valveWidth/this.model.valveOpeningFactor, this.model.valveHeight);
-        
+    }
+
+    drawTopChamber(){
+        this.ctx.beginPath();
+        this.ctx.lineCap = "butt";
+        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.valveY + 8);
+        this.ctx.lineTo(this.model.rightTopChamberWall, this.model.bezierPipeY3 - this.model.bezierPadding2);
+        this.ctx.lineTo(this.model.rightTopChamberWall - this.model.rightTopChamberPadding, this.model.bezierPipeY3 - this.model.bezierPadding2);
+        this.ctx.moveTo(this.model.leftTopChamberWall + this.model.leftTopChamberPadding, this.model.bezierPipeY3 - this.model.bezierPadding2);
+        this.ctx.lineTo(this.model.leftTopChamberWall, this.model.bezierPipeY3 - this.model.bezierPadding2);
+        this.ctx.lineTo(this.model.leftTopChamberWall, this.model.valveY - this.model.topChamberHeight + 20);
+        this.ctx.lineTo(this.model.leftTopChamberWall + 20, this.model.valveY - this.model.topChamberHeight);
+        this.ctx.lineTo(this.model.rightTopChamberWall, this.model.valveY - this.model.topChamberHeight);
+        this.ctx.lineTo(this.model.rightTopChamberWall, this.model.valveY - 8);
+        this.ctx.stroke();
+    }
+
+    drawExhaust(){
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.valveY - 25);
+        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + this.model.exhaustPipeRadius/2, this.model.valveY - 25);
+        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + 60 + this.model.exhaustPipeRadius/2, this.model.valveY - 25 - 40);
+        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.valveY - 25 - this.model.exhaustPipeRadius);
+        this.ctx.lineTo(this.model.rightTopChamberWall + 40, this.model.valveY - 25 - this.model.exhaustPipeRadius);
+        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + 60, this.model.valveY - 25 - 40 - this.model.exhaustPipeRadius);
+        this.ctx.stroke();
     }
 }
 
@@ -314,13 +339,18 @@ class SteamModel {
         this.wheelValveRadius = 27;
         this.valveY = this.bezierPipeY3 - this.bezierPadding2 - this.valveHeight/2 - this.lineWidth/2;
         this.valvePhase = Math.PI/2;
-        /*
-            The valveRodLength value has to be fine tuned so the difference the piston height and the wheel height is compensed.
-        */ 
-        this.valveRodLength = 380;
+
+        this.valveRodLength = 380; //valveRodLength value has to be fine tuned to compensate the delta in Y differences.
         this.valveRodWidth = 309;
         this.valveRodHeight = 10;
-        this.valveOpeningFactor = 5.9;
+        this.valveOpeningFactor = 5.7;
+        this.rightTopChamberPadding = 100;
+        this.leftTopChamberPadding = 80;
+        this.rightTopChamberWall = this.rightTopChamberPadding + this.rightChamberWall - this.bezierPipeX3;
+        this.leftTopChamberWall = -this.leftTopChamberPadding + this.leftChamberWall + this.bezierPipeX3;
+        this.topChamberHeight = 80;
+
+        this.exhaustPipeRadius = 20;
     } 
     
     resize(width, height) { 
