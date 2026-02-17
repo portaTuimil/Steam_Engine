@@ -62,7 +62,8 @@ canvas{
 
 body{
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: center; 
     background-color: var(--background-color);  
+    height: 100vh;
 }
