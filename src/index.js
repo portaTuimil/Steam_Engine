@@ -37,6 +37,7 @@ class SteamEngine {
         this.lineWidth = lineWidth;
         
         this.model = new SteamModel(this.angle, this.width, this.height, this.lineWidth);
+        this.effect = new Effect(this.ctx, this.model.exhaustX, this.model.exhaustY);
         this.setDefaultStyles();
         requestAnimationFrame(this.animate);
     }
@@ -62,6 +63,7 @@ class SteamEngine {
         this.ctx.scale(this.model.scale, this.model.scale);
         this.ctx.translate(-40, 0);
 
+        this.effect.draw(deltaAngle);
         this.draw();
         this.ctx.restore();
         requestAnimationFrame(this.animate);
@@ -351,6 +353,8 @@ class SteamModel {
         this.topChamberHeight = 80;
 
         this.exhaustPipeRadius = 20;
+        this.exhaustX = this.rightTopChamberWall + 40 + 60 + 22; 
+        this.exhaustY = this.valveY - 25 - 40 - this.exhaustPipeRadius;
     } 
     
     resize(width, height) { 
@@ -360,3 +364,64 @@ class SteamModel {
         this.staticCalculus();
     }
 }
+
+
+class Particle {
+    constructor(ctx, exhaustX, exhaustY){
+        this.ctx = ctx;
+        this.X = exhaustX;
+        this.Y = exhaustY;
+        this.r = 10 * Math.random();
+        this.dX = 5;
+        this.dY = 10;
+    }
+
+    draw(){
+        this.X += this.dX * Math.random();
+        this.Y -= this.dY * Math.random();
+        this.dX += 0.9;
+        this.dy -= 0.5;
+        this.r += Math.random();
+
+        this.ctx.fillStyle = "#ffffff" + "aa";
+        this.ctx.beginPath();
+        this.ctx.arc(this.X, this.Y, this.r, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.fillStyle = "#ffffff";
+    }
+}
+
+
+class Effect {
+    constructor(ctx, exhaustX, exhaustY){
+        this.ctx = ctx;
+        this.exhaustX = exhaustX;
+        this.exhaustY = exhaustY;
+        this.particles = [];
+        this.angle = 0;
+    }
+
+    draw(deltaAngle) {
+        this.angle += deltaAngle;
+
+        if(this.angle >= 2*Math.PI){
+            this.angle -= 2*Math.PI;
+        }
+
+        if(1 < this.angle <2){
+            for(let i = 0; i<=1; i++){
+                this.particles.push(new Particle(this.ctx, this.exhaustX, this.exhaustY));
+
+                if(this.particles.length > 80){
+                    this.particles.shift();
+                }
+            }
+        }
+
+        this.particles.forEach(particle => {
+            particle.draw();
+        });
+    }
+}
+
+
