@@ -28,7 +28,7 @@ class SteamEngine {
         this.height = canvas.height;
 
         this.lastTime = 0;
-        this.speed = (120 * Math.PI) / 180;
+        this.speed = (160 * Math.PI) / 180;
         this.animate = this.animate.bind(this);
         this.canvas.steamEngineInstance = this;
 
@@ -372,18 +372,23 @@ class Particle {
         this.X = exhaustX;
         this.Y = exhaustY;
         this.r = 10 * Math.random();
-        this.dX = 5;
-        this.dY = 10;
+        this.dX = 1;
+        this.dY = 4;
+        this.opacity = "99";
     }
 
     draw(){
         this.X += this.dX * Math.random();
         this.Y -= this.dY * Math.random();
-        this.dX += 0.9;
-        this.dy -= 0.5;
-        this.r += Math.random();
+        this.dX += 0.2 * Math.random();
+        this.dY -= 0.01 * Math.random();
+        this.r +=  0.4 * Math.random();
 
-        this.ctx.fillStyle = "#ffffff" + "aa";
+        if(this.r > 12){this.opacity = "66"};
+        if(this.r > 16){this.opacity = "44"};
+        if(this.r > 22){this.opacity = "22"};
+
+        this.ctx.fillStyle = "#ffffff" + this.opacity;
         this.ctx.beginPath();
         this.ctx.arc(this.X, this.Y, this.r, 0, Math.PI * 2);
         this.ctx.fill();
@@ -408,11 +413,11 @@ class Effect {
             this.angle -= 2*Math.PI;
         }
 
-        if(1 < this.angle <2){
+        if((Math.PI + 1 < this.angle && this.angle < Math.PI + 3.05) || (1 < this.angle && this.angle < 3.05) ){
             for(let i = 0; i<=1; i++){
                 this.particles.push(new Particle(this.ctx, this.exhaustX, this.exhaustY));
 
-                if(this.particles.length > 80){
+                if(this.particles.length > 170){
                     this.particles.shift();
                 }
             }
