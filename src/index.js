@@ -4,8 +4,15 @@ const fillColor = "#FFFFFF";
 const lineWidth = 10;
 
 window.addEventListener("load", () => {
-    const width = window.innerWidth / 1.2;
-    const height = width * 9 / 16;
+    let height;
+    let width;
+    if(window.innerHeight > window.innerWidth){
+        width = window.innerWidth;
+        height = width * 9 / 16;
+    } else{
+        width = window.innerWidth / 1.2;
+        height = width * 9 / 16;
+    }
     canvas.width = width;
     canvas.height = height;
     const steamEngine = new SteamEngine(canvas, lineColor, fillColor, lineWidth);
@@ -13,8 +20,15 @@ window.addEventListener("load", () => {
 
 window.addEventListener("resize", () => {
     const canvas = document.getElementById("steam_engine");
-    const width = window.innerWidth / 1.2;  //proportions of the viewport
-    const height = width * 9 / 16;
+    let height;
+    let width;
+    if(window.innerHeight > window.innerWidth){
+        width = window.innerWidth;
+        height = width * 9 / 16;
+    } else{
+        width = window.innerWidth / 1.2;
+        height = width * 9 / 16;
+    }
 
     canvas.steamEngineInstance.resize(width, height);
 });
