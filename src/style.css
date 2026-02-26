@@ -56,10 +56,6 @@ a:active, button:active {
 
 
 /* ---------- Page ---------- */
-canvas{
-    background-color: var(--background-color);  
-}
-
 body{
     display: flex;
     align-items: end;

@@ -1,9 +1,15 @@
-const canvas = document.getElementById("steam_engine");
+//Parameters to define (shape parameters should be modified in SteamModel):
+const rotationSpeed = 28; //RPM
 const lineColor = "#FFFFFF";
 const fillColor = "#FFFFFF";
 const lineWidth = 10;
+const father_element = "body";
 
-window.addEventListener("load", () => {
+const canvas = document.createElement("canvas");
+canvas.setAttribute("id", "steam_engine");
+document.querySelector(father_element).appendChild(canvas);
+
+function getCanvasDimensions(){
     let height;
     let width;
     if(window.innerHeight > window.innerWidth){
@@ -13,28 +19,27 @@ window.addEventListener("load", () => {
         width = window.innerWidth / 1.2;
         height = width * 9 / 16;
     }
+    return { width, height };
+}
+
+window.addEventListener("load", () => {
+    const {width, height} = getCanvasDimensions();
     canvas.width = width;
     canvas.height = height;
-    const steamEngine = new SteamEngine(canvas, lineColor, fillColor, lineWidth);
+
+    const steamEngine = new SteamEngine(canvas, rotationSpeed, lineColor, fillColor, lineWidth);
 });
 
 window.addEventListener("resize", () => {
-    const canvas = document.getElementById("steam_engine");
-    let height;
-    let width;
-    if(window.innerHeight > window.innerWidth){
-        width = window.innerWidth;
-        height = width * 9 / 16;
-    } else{
-        width = window.innerWidth / 1.2;
-        height = width * 9 / 16;
-    }
+    const {width, height} = getCanvasDimensions();
+    canvas.width = width;
+    canvas.height = height;
 
     canvas.steamEngineInstance.resize(width, height);
 });
 
 class SteamEngine {
-    constructor(canvas, lineColor, fillColor, lineWidth) {
+    constructor(canvas, rotationSpeed, lineColor, fillColor, lineWidth) {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
 
@@ -42,7 +47,7 @@ class SteamEngine {
         this.height = canvas.height;
 
         this.lastTime = 0;
-        this.speed = (160 * Math.PI) / 180;
+        this.speed = (rotationSpeed * Math.PI) / 30;
         this.animate = this.animate.bind(this);
         this.canvas.steamEngineInstance = this;
 
