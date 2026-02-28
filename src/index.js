@@ -30,14 +30,6 @@ window.addEventListener("load", () => {
     const steamEngine = new SteamEngine(canvas, rotationSpeed, lineColor, fillColor, lineWidth);
 });
 
-window.addEventListener("resize", () => {
-    const {width, height} = getCanvasDimensions();
-    canvas.width = width;
-    canvas.height = height;
-
-    canvas.steamEngineInstance.resize(width, height);
-});
-
 class SteamEngine {
     constructor(canvas, rotationSpeed, lineColor, fillColor, lineWidth) {
         this.canvas = canvas;
@@ -56,9 +48,14 @@ class SteamEngine {
         this.lineWidth = lineWidth;
         
         this.model = new SteamModel(this.angle, this.width, this.height, this.lineWidth);
-        this.effect = new Effect(this.ctx, this.model.exhaustX, this.model.exhaustY);
+        this.effect = new Effect(this.ctx, this.model.exhaustX +this.model.exhaustPipeRadius/2*Math.cos(this.model.exhaustAngle) + 5, -5 +this.model.exhaustY+ this.model.exhaustPipeRadius/2*Math.sin(this.model.exhaustAngle));
         this.setDefaultStyles();
         requestAnimationFrame(this.animate);
+
+        window.addEventListener("resize", () => {
+            const {width, height} = getCanvasDimensions();
+            canvas.steamEngineInstance.resize(width, height);
+        });
     }
 
     draw() {
@@ -80,7 +77,7 @@ class SteamEngine {
         this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.save();
         this.ctx.scale(this.model.scale, this.model.scale);
-        this.ctx.translate(-40, 0);
+        this.ctx.translate(-45, 0);
 
         this.effect.draw(deltaAngle);
         this.draw();
@@ -88,7 +85,7 @@ class SteamEngine {
         requestAnimationFrame(this.animate);
     }
 
-    resize(width, height, lineColor, fillColor, lineWidth) {
+    resize(width, height) {
         this.width = width;
         this.height = height;
 
@@ -261,12 +258,12 @@ class SteamEngine {
 
     drawExhaust(){
         this.ctx.beginPath();
-        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.valveY - 25);
-        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + this.model.exhaustPipeRadius/2, this.model.valveY - 25);
-        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + 60 + this.model.exhaustPipeRadius/2, this.model.valveY - 25 - 40);
-        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.valveY - 25 - this.model.exhaustPipeRadius);
-        this.ctx.lineTo(this.model.rightTopChamberWall + 40, this.model.valveY - 25 - this.model.exhaustPipeRadius);
-        this.ctx.lineTo(this.model.rightTopChamberWall + 40 + 60, this.model.valveY - 25 - 40 - this.model.exhaustPipeRadius);
+        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.startingUpperExhaustY);
+        this.ctx.lineTo(this.model.startingUpperExhaustX, this.model.startingUpperExhaustY);
+        this.ctx.lineTo(this.model.exhaustX, this.model.exhaustY);
+        this.ctx.moveTo(this.model.rightTopChamberWall, this.model.startingUpperExhaustY + this.model.exhaustPipeRadius);
+        this.ctx.lineTo(this.model.startingUpperExhaustX + this.model.exhaustPipeRadius/2, this.model.startingUpperExhaustY + this.model.exhaustPipeRadius);
+        this.ctx.lineTo(this.model.exhaustX + this.model.exhaustPipeRadius/2 + this.model.exhaustPipeRadius/2*Math.cos(this.model.exhaustAngle), this.model.exhaustY + this.model.exhaustPipeRadius - this.model.exhaustPipeRadius/2*Math.sin(this.model.exhaustAngle));
         this.ctx.stroke();
     }
 }
@@ -372,8 +369,11 @@ class SteamModel {
         this.topChamberHeight = 80;
 
         this.exhaustPipeRadius = 20;
-        this.exhaustX = this.rightTopChamberWall + 40 + 60 + 22; 
-        this.exhaustY = this.valveY - 25 - 40 - this.exhaustPipeRadius;
+        this.startingUpperExhaustX = this.rightTopChamberWall + 40 + this.exhaustPipeRadius/2;
+        this.startingUpperExhaustY =  this.valveY - 50 ;
+        this.exhaustAngle = Math.PI/4;
+        this.exhaustX = this.startingUpperExhaustX + 60 * Math.cos(this.exhaustAngle); 
+        this.exhaustY = this.startingUpperExhaustY- 60 * Math.sin(this.exhaustAngle);
     } 
     
     resize(width, height) { 
@@ -392,7 +392,7 @@ class Particle {
         this.Y = exhaustY;
         this.r = 10 * Math.random();
         this.dX = 1;
-        this.dY = 4;
+        this.dY = 2.5;
         this.opacity = "99";
     }
 
