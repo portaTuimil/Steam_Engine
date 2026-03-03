@@ -48,7 +48,7 @@ class SteamEngine {
         this.lineWidth = lineWidth;
         
         this.model = new SteamModel(this.angle, this.width, this.height, this.lineWidth);
-        this.effect = new Effect(this.ctx, this.model.exhaustX +this.model.exhaustPipeRadius/2*Math.cos(this.model.exhaustAngle) + 10,-11 + this.model.exhaustY+ this.model.exhaustPipeRadius/2*Math.sin(this.model.exhaustAngle));
+        this.effect = new Effect(this.ctx, this.model.exhaustX +this.model.exhaustPipeRadius/2*Math.cos(this.model.exhaustAngle) + 5,-7 + this.model.exhaustY+ this.model.exhaustPipeRadius/2*Math.sin(this.model.exhaustAngle));
         this.setDefaultStyles();
         requestAnimationFrame(this.animate);
 
