@@ -449,3 +449,8 @@ class Effect {
 }
 
 
+(function checkIframed() {
+  if (window.self != window.top) {
+    document.querySelector("body").style.backgroundColor = "transparent";
+  }
+})();
