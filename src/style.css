@@ -58,8 +58,8 @@ a:active, button:active {
 /* ---------- Page ---------- */
 body{
     display: flex;
-    align-items: end;
+    align-items: start;
     justify-content: center; 
-    background-color: transparent;  
+    background-color: var(--background-color);  
     height: 100vh;
 }
