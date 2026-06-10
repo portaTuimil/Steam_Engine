@@ -58,7 +58,7 @@ a:active, button:active {
 /* ---------- Page ---------- */
 body{
     display: flex;
-    align-items: start;
+    align-items: end;
     justify-content: center; 
     background-color: var(--background-color);  
     height: 100vh;

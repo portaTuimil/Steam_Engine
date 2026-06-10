@@ -16,7 +16,7 @@ function getCanvasDimensions(){
         width = window.innerWidth;
         height = width * 9 / 16;
     } else{
-        width = window.innerWidth / 1.2;
+        width = window.innerWidth/1.2;
         height = width * 9 / 16;
     }
     return { width, height };
